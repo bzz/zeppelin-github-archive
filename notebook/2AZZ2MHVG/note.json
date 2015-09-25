@@ -1,0 +1,920 @@
+{
+  "paragraphs": [
+    {
+      "title": "0. Load dependencies",
+      "text": "%dep\nz.load(\"org.scalaj:scalaj-http_2.10:1.1.5\") //for Github API\nz.load(\"me.lessis:courier_2.10:0.1.3\")      //for emails ",
+      "dateUpdated": "Sep 25, 2015 5:46:48 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true,
+        "tableHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442897490866_-1967479454",
+      "id": "20150922-135130_210759794",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res0: org.apache.zeppelin.spark.dep.Dependency \u003d org.apache.zeppelin.spark.dep.Dependency@690cbb9a\n"
+      },
+      "dateCreated": "Sep 22, 2015 1:51:30 PM",
+      "dateStarted": "Sep 25, 2015 5:46:48 PM",
+      "dateFinished": "Sep 25, 2015 5:46:58 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "1a - Download today\u0027s data - in serial",
+      "text": "%sh\nwget -nc http://data.githubarchive.org/2015-03-26-{20..21}.json.gz\n\n\n#wget -nc http://data.githubarchive.org/$(date +%Y-%m-%d)-{0..23}.json.gz\n",
+      "dateUpdated": "Sep 25, 2015 5:48:31 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorMode": "ace/mode/sh",
+        "title": true,
+        "tableHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442897437480_-905785384",
+      "id": "20150922-135037_425083785",
+      "result": {
+        "code": "ERROR",
+        "type": "TEXT",
+        "msg": "Process exited with an error: 8 (Exit value: 8)"
+      },
+      "dateCreated": "Sep 22, 2015 1:50:37 PM",
+      "dateStarted": "Sep 22, 2015 9:42:37 PM",
+      "dateFinished": "Sep 22, 2015 9:42:49 PM",
+      "status": "ERROR",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "1b - Download toady\u0027s Data - in Parallel",
+      "text": "import scalaj.http._\n\nval date \u003d \"2015-09-22\"\nval hours \u003d sc.parallelize(0 to 23, 24)\n\nval urls \u003d hours.map { hour \u003d\u003e\n  s\"http://data.githubarchive.org/$date-$hour.json.gz\"\n}\nval validUrls \u003d urls.filter(Http(_).method(\"HEAD\").asString.is2xx)\n\nval files \u003d validUrls.pipe(\"wget -nc -i -\") collect() foreach println\n// cluster mode: move to HDFS\n//  files will download files to spark.local.dir on your workers\n//  val files \u003d sc.textFile(\"spark.local.dir\")\n//  files.saveAsTexFile(\"hdfs://...\")",
+      "dateUpdated": "Sep 25, 2015 5:48:28 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true,
+        "tableHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442897642997_-1448206357",
+      "id": "20150922-135402_2109616680",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "import scalaj.http._\nhours: org.apache.spark.rdd.RDD[Int] \u003d ParallelCollectionRDD[1189] at parallelize at \u003cconsole\u003e:64\nurls: org.apache.spark.rdd.RDD[String] \u003d MapPartitionsRDD[1190] at map at \u003cconsole\u003e:65\nvalidUrls: org.apache.spark.rdd.RDD[String] \u003d MapPartitionsRDD[1191] at filter at \u003cconsole\u003e:67\nfiles: Unit \u003d ()\n"
+      },
+      "dateCreated": "Sep 22, 2015 1:54:02 PM",
+      "dateStarted": "Sep 22, 2015 9:16:15 PM",
+      "dateFinished": "Sep 22, 2015 9:19:22 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n# Data Exploration",
+      "dateUpdated": "Sep 22, 2015 9:21:03 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442905720583_156518291",
+      "id": "20150922-160840_1580278850",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch1\u003eData Exploration\u003c/h1\u003e\n"
+      },
+      "dateCreated": "Sep 22, 2015 4:08:40 PM",
+      "dateStarted": "Sep 22, 2015 9:21:03 PM",
+      "dateFinished": "Sep 22, 2015 9:21:03 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "2. Read the data",
+      "text": "//val df \u003d sqlc.read.json(s\"*.json.gz\")\nval dataFiles \u003d \"/Users/<username>/apacheCon2015-workshop/*.json.gz\"\nval df \u003d sqlc.read.json(dataFiles)\nval date \u003d \"2015-03-26\"\ndf.registerTempTable(\"ga\")",
+      "dateUpdated": "Sep 25, 2015 6:32:37 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorMode": "ace/mode/scala",
+        "tableHide": true,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442897645544_-864542275",
+      "id": "20150922-135405_1372528790",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "dataFiles: String \u003d /Users/<username>/apacheCon2015-workshop/*.json.gz\ndf: org.apache.spark.sql.DataFrame \u003d [actor: struct\u003cavatar_url:string,gravatar_id:string,id:bigint,login:string,url:string\u003e, created_at: string, id: string, org: struct\u003cavatar_url:string,gravatar_id:string,id:bigint,login:string,url:string\u003e, payload: struct\u003caction:string,before:string,comment:struct\u003c_links:struct\u003chtml:struct\u003chref:string\u003e,pull_request:struct\u003chref:string\u003e,self:struct\u003chref:string\u003e\u003e,body:string,commit_id:string,created_at:string,diff_hunk:string,html_url:string,id:bigint,issue_url:string,line:bigint,original_commit_id:string,original_position:bigint,path:string,position:bigint,pull_request_url:string,updated_at:string,url:string,user:struct\u003cavatar_url:string,events_url:string,followers_url:string,following_url:string,gists_url:string,gravatar_id:string,html_url:string,id:bi...date: String \u003d 2015-03-26\n"
+      },
+      "dateCreated": "Sep 22, 2015 1:54:05 PM",
+      "dateStarted": "Sep 25, 2015 6:32:37 PM",
+      "dateFinished": "Sep 25, 2015 6:33:09 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "3. Print it",
+      "text": "df.count\ndf.show",
+      "dateUpdated": "Sep 23, 2015 5:18:23 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442903339622_593387846",
+      "id": "20150922-152859_958105670",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res3: Long \u003d 63073\n+--------------------+--------------------+----------+--------------------+--------------------+------+--------------------+--------------------+\n|               actor|          created_at|        id|                 org|             payload|public|                repo|                type|\n+--------------------+--------------------+----------+--------------------+--------------------+------+--------------------+--------------------+\n|[https://avatars....|2015-03-26T20:00:00Z|2680051738|                null|[null,b93f4fead5d...|  true|[32046424,lisyaru...|           PushEvent|\n|[https://avatars....|2015-03-26T20:00:00Z|2680051807|                null|[created,null,[[[...|  true|[30448989,kirich1...|PullRequestReview...|\n|[https://avatars....|2015-03-26T20:00:01Z|2680051792|                null|[created,null,[nu...|  true|[29206793,jGleitz...|   IssueCommentEvent|\n|[https://avatars....|2015-03-26T20:00:01Z|2680051797|                null|[null,53913e4b7e4...|  true|[32931984,Requina...|           PushEvent|\n|[https://avatars....|2015-03-26T20:00:01Z|2680051815|[https://avatars....|[created,null,[nu...|  true|[24979127,omnisci...|   IssueCommentEvent|\n|[https://avatars....|2015-03-26T20:00:01Z|2680051816|[https://avatars....|[null,null,null,n...|  true|[1428100,jenkinsc...|           ForkEvent|\n|[https://avatars....|2015-03-26T20:00:01Z|2680051817|                null|[created,null,[nu...|  true|[8066758,Circa75/...|   IssueCommentEvent|\n|[https://avatars....|2015-03-26T20:00:01Z|2680051819|                null|[null,2d2480f8577...|  true|[21405138,hawkriv...|           PushEvent|\n|[https://avatars....|2015-03-26T20:00:02Z|2680051845|[https://avatars....|[null,null,null,n...|  true|[28197235,firstan...|         CreateEvent|\n|[https://avatars....|2015-03-26T20:00:02Z|2680051852|                null|[null,null,null,n...|  true|[32948954,awernic...|         CreateEvent|\n|[https://avatars....|2015-03-26T20:00:02Z|2680051853|                null|[null,9aafcc0b647...|  true|[32948152,poulinj...|           PushEvent|\n|[https://avatars....|2015-03-26T20:00:02Z|2680051867|                null|[started,null,nul...|  true|[27123887,Kekun/r...|          WatchEvent|\n|[https://avatars....|2015-03-26T20:00:02Z|2680051869|                null|[null,null,null,n...|  true|[32948954,awernic...|         CreateEvent|\n|[https://avatars....|2015-03-26T20:00:02Z|2680051871|                null|[null,a9d67371f82...|  true|[32831821,liamdil...|           PushEvent|\n|[https://avatars....|2015-03-26T20:00:02Z|2680051874|[https://avatars....|[closed,null,null...|  true|[30030073,elastic...|         IssuesEvent|\n|[https://avatars....|2015-03-26T20:00:02Z|2680051879|                null|[null,acf17e1026c...|  true|[32675710,mickyhi...|           PushEvent|\n|[https://avatars....|2015-03-26T20:00:02Z|2680051888|                null|[null,2ffa628c871...|  true|[32656577,jeselle...|           PushEvent|\n|[https://avatars....|2015-03-26T20:00:02Z|2680051889|                null|[null,89f8025bce0...|  true|[32745546,Xenothi...|           PushEvent|\n|[https://avatars....|2015-03-26T20:00:03Z|2680051891|                null|[null,d282fea9fe7...|  true|[32948939,userwit...|           PushEvent|\n|[https://avatars....|2015-03-26T20:00:03Z|2680051894|                null|[null,null,null,n...|  true|[29551850,b693823...|         CreateEvent|\n+--------------------+--------------------+----------+--------------------+--------------------+------+--------------------+--------------------+\n\n"
+      },
+      "dateCreated": "Sep 22, 2015 3:28:59 PM",
+      "dateStarted": "Sep 23, 2015 5:18:23 PM",
+      "dateFinished": "Sep 23, 2015 5:18:27 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": " ",
+      "dateUpdated": "Sep 23, 2015 2:09:53 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [
+            {
+              "name": "actor",
+              "index": 0.0,
+              "aggr": "sum"
+            }
+          ],
+          "values": [
+            {
+              "name": "created_at",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          ],
+          "groups": [],
+          "scatter": {
+            "xAxis": {
+              "name": "actor",
+              "index": 0.0,
+              "aggr": "sum"
+            },
+            "yAxis": {
+              "name": "created_at",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          }
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442905710109_1247819413",
+      "id": "20150922-160830_730002236",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT"
+      },
+      "dateCreated": "Sep 22, 2015 4:08:30 PM",
+      "dateStarted": "Sep 23, 2015 2:09:53 PM",
+      "dateFinished": "Sep 23, 2015 2:09:54 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "3a. Exploration - Event types",
+      "text": "%sql\nSELECT type, count(*) as cnt FROM ga GROUP BY type ORDER BY cnt DESC",
+      "dateUpdated": "Sep 23, 2015 5:18:30 PM",
+      "config": {
+        "colWidth": 5.0,
+        "graph": {
+          "mode": "pieChart",
+          "height": 540.0,
+          "optionOpen": false,
+          "keys": [
+            {
+              "name": "type",
+              "index": 0.0,
+              "aggr": "sum"
+            }
+          ],
+          "values": [
+            {
+              "name": "cnt",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          ],
+          "groups": [],
+          "scatter": {
+            "xAxis": {
+              "name": "type",
+              "index": 0.0,
+              "aggr": "sum"
+            }
+          }
+        },
+        "editorMode": "ace/mode/scala",
+        "tableHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442903520669_1648216612",
+      "id": "20150922-153200_1216588425",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TABLE",
+        "msg": "type\tcnt\nPushEvent\t31043\nCreateEvent\t7918\nIssueCommentEvent\t6521\nWatchEvent\t4883\nPullRequestEvent\t3613\nIssuesEvent\t2868\nForkEvent\t1688\nDeleteEvent\t1498\nPullRequestReviewCommentEvent\t1140\nGollumEvent\t883\nCommitCommentEvent\t406\nMemberEvent\t309\nReleaseEvent\t194\nPublicEvent\t109\n"
+      },
+      "dateCreated": "Sep 22, 2015 3:32:00 PM",
+      "dateStarted": "Sep 23, 2015 5:18:30 PM",
+      "dateFinished": "Sep 23, 2015 5:18:34 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "3b. Exploration - top 10 Orgs for eventType",
+      "text": "%sql\nSELECT org.login, count(*) as count \nFROM ga \nWHERE type \u003d \"${EventType\u003dWatchEvent,PushEvent|CreateEvent|WatchEvent|IssueCommentEvent|PullRequestEvent|PublicEvent}\"\n      AND org.login \u003c\u003e \"null\"\nGROUP BY org.login\nORDER BY count DESC\nLIMIT 100\n",
+      "dateUpdated": "Sep 25, 2015 4:47:49 PM",
+      "config": {
+        "colWidth": 7.0,
+        "graph": {
+          "mode": "table",
+          "height": 368.0,
+          "optionOpen": false,
+          "keys": [
+            {
+              "name": "login",
+              "index": 0.0,
+              "aggr": "sum"
+            }
+          ],
+          "values": [
+            {
+              "name": "count",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          ],
+          "groups": [],
+          "scatter": {
+            "xAxis": {
+              "name": "login",
+              "index": 0.0,
+              "aggr": "sum"
+            },
+            "yAxis": {
+              "name": "count",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          }
+        },
+        "editorMode": "ace/mode/sql",
+        "title": true
+      },
+      "settings": {
+        "params": {
+          "EventType": "PublicEvent"
+        },
+        "forms": {
+          "EventType": {
+            "name": "EventType",
+            "defaultValue": "WatchEvent",
+            "options": [
+              {
+                "value": "PushEvent"
+              },
+              {
+                "value": "CreateEvent"
+              },
+              {
+                "value": "WatchEvent"
+              },
+              {
+                "value": "IssueCommentEvent"
+              },
+              {
+                "value": "PullRequestEvent"
+              },
+              {
+                "value": "PublicEvent"
+              }
+            ],
+            "hidden": false
+          }
+        }
+      },
+      "jobName": "paragraph_1442904108492_419187419",
+      "id": "20150922-154148_963665999",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TABLE",
+        "msg": "login\tcount\nGoogleCloudPlatform\t3\nfacebook\t3\nZeusWPI\t1\ngratipay\t1\nNextdoor\t1\nBitFountain\t1\nredpost\t1\nflagshipcompany\t1\nlinkedin\t1\ngoogle\t1\ngwu-libraries\t1\ndatamade\t1\nsamsungsamiio\t1\nLeagueSharp\t1\nGenius\t1\ninfo-com\t1\nlevelsix\t1\n"
+      },
+      "dateCreated": "Sep 22, 2015 3:41:48 PM",
+      "dateStarted": "Sep 25, 2015 4:47:49 PM",
+      "dateFinished": "Sep 25, 2015 4:47:54 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "df.printSchema\n",
+      "dateUpdated": "Sep 23, 2015 12:32:42 AM",
+      "config": {
+        "colWidth": 5.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorMode": "ace/mode/scala",
+        "tableHide": true,
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442904017964_1704310042",
+      "id": "20150922-154017_1351885390",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "root\n |-- actor: struct (nullable \u003d true)\n |    |-- avatar_url: string (nullable \u003d true)\n |    |-- gravatar_id: string (nullable \u003d true)\n |    |-- id: long (nullable \u003d true)\n |    |-- login: string (nullable \u003d true)\n |    |-- url: string (nullable \u003d true)\n |-- created_at: string (nullable \u003d true)\n |-- id: string (nullable \u003d true)\n |-- org: struct (nullable \u003d true)\n |    |-- avatar_url: string (nullable \u003d true)\n |    |-- gravatar_id: string (nullable \u003d true)\n |    |-- id: long (nullable \u003d true)\n |    |-- login: string (nullable \u003d true)\n |    |-- url: string (nullable \u003d true)\n |-- payload: struct (nullable \u003d true)\n |    |-- action: string (nullable \u003d true)\n |    |-- before: string (nullable \u003d true)\n |    |-- comment: struct (nullable \u003d true)\n |    |    |-- _links: struct (nullable \u003d true)\n |    |    |    |-- html: struct (nullable \u003d true)\n |    |    |    |    |-- href: string (nullable \u003d true)\n |    |    |    |-- pull_request: struct (nullable \u003d true)\n |    |    |    |    |-- href: string (nullable \u003d true)\n |    |    |    |-- self: struct (nullable \u003d true)\n |    |    |    |    |-- href: string (nullable \u003d true)\n |    |    |-- body: string (nullable \u003d true)\n |    |    |-- commit_id: string (nullable \u003d true)\n |    |    |-- created_at: string (nullable \u003d true)\n |    |    |-- diff_hunk: string (nullable \u003d true)\n |    |    |-- html_url: string (nullable \u003d true)\n |    |    |-- id: long (nullable \u003d true)\n |    |    |-- issue_url: string (nullable \u003d true)\n |    |    |-- line: long (nullable \u003d true)\n |    |    |-- original_commit_id: string (nullable \u003d true)\n |    |    |-- original_position: long (nullable \u003d true)\n |    |    |-- path: string (nullable \u003d true)\n |    |    |-- position: long (nullable \u003d true)\n |    |    |-- pull_request_url: string (nullable \u003d true)\n |    |    |-- updated_at: string (nullable \u003d true)\n |    |    |-- url: string (nullable \u003d true)\n |    |    |-- user: struct (nullable \u003d true)\n |    |    |    |-- avatar_url: string (nullable \u003d true)\n |    |    |    |-- events_url: string (nullable \u003d true)\n |    |    |    |-- followers_url: string (nullable \u003d true)\n |    |    |    |-- following_url: string (nullable \u003d true)\n |    |    |    |-- gists_url: string (nullable \u003d true)\n |    |    |    |-- gravatar_id: string (nullable \u003d true)\n |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |-- login: string (nullable \u003d true)\n |    |    |    |-- organizations_url: string (nullable \u003d true)\n |    |    |    |-- received_events_url: string (nullable \u003d true)\n |    |    |    |-- repos_url: string (nullable \u003d true)\n |    |    |    |-- site_admin: boolean (nullable \u003d true)\n |    |    |    |-- starred_url: string (nullable \u003d true)\n |    |    |    |-- subscriptions_url: string (nullable \u003d true)\n |    |    |    |-- type: string (nullable \u003d true)\n |    |    |    |-- url: string (nullable \u003d true)\n |    |-- commits: array (nullable \u003d true)\n |    |    |-- element: struct (containsNull \u003d true)\n |    |    |    |-- author: struct (nullable \u003d true)\n |    |    |    |    |-- email: string (nullable \u003d true)\n |    |    |    |    |-- name: string (nullable \u003d true)\n |    |    |    |-- distinct: boolean (nullable \u003d true)\n |    |    |    |-- message: string (nullable \u003d true)\n |    |    |    |-- sha: string (nullable \u003d true)\n |    |    |    |-- url: string (nullable \u003d true)\n |    |-- description: string (nullable \u003d true)\n |    |-- distinct_size: long (nullable \u003d true)\n |    |-- forkee: struct (nullable \u003d true)\n |    |    |-- archive_url: string (nullable \u003d true)\n |    |    |-- assignees_url: string (nullable \u003d true)\n |    |    |-- blobs_url: string (nullable \u003d true)\n |    |    |-- branches_url: string (nullable \u003d true)\n |    |    |-- clone_url: string (nullable \u003d true)\n |    |    |-- collaborators_url: string (nullable \u003d true)\n |    |    |-- comments_url: string (nullable \u003d true)\n |    |    |-- commits_url: string (nullable \u003d true)\n |    |    |-- compare_url: string (nullable \u003d true)\n |    |    |-- contents_url: string (nullable \u003d true)\n |    |    |-- contributors_url: string (nullable \u003d true)\n |    |    |-- created_at: string (nullable \u003d true)\n |    |    |-- default_branch: string (nullable \u003d true)\n |    |    |-- description: string (nullable \u003d true)\n |    |    |-- downloads_url: string (nullable \u003d true)\n |    |    |-- events_url: string (nullable \u003d true)\n |    |    |-- fork: boolean (nullable \u003d true)\n |    |    |-- forks: long (nullable \u003d true)\n |    |    |-- forks_count: long (nullable \u003d true)\n |    |    |-- forks_url: string (nullable \u003d true)\n |    |    |-- full_name: string (nullable \u003d true)\n |    |    |-- git_commits_url: string (nullable \u003d true)\n |    |    |-- git_refs_url: string (nullable \u003d true)\n |    |    |-- git_tags_url: string (nullable \u003d true)\n |    |    |-- git_url: string (nullable \u003d true)\n |    |    |-- has_downloads: boolean (nullable \u003d true)\n |    |    |-- has_issues: boolean (nullable \u003d true)\n |    |    |-- has_pages: boolean (nullable \u003d true)\n |    |    |-- has_wiki: boolean (nullable \u003d true)\n |    |    |-- homepage: string (nullable \u003d true)\n |    |    |-- hooks_url: string (nullable \u003d true)\n |    |    |-- html_url: string (nullable \u003d true)\n |    |    |-- id: long (nullable \u003d true)\n |    |    |-- issue_comment_url: string (nullable \u003d true)\n |    |    |-- issue_events_url: string (nullable \u003d true)\n |    |    |-- issues_url: string (nullable \u003d true)\n |    |    |-- keys_url: string (nullable \u003d true)\n |    |    |-- labels_url: string (nullable \u003d true)\n |    |    |-- language: string (nullable \u003d true)\n |    |    |-- languages_url: string (nullable \u003d true)\n |    |    |-- merges_url: string (nullable \u003d true)\n |    |    |-- milestones_url: string (nullable \u003d true)\n |    |    |-- mirror_url: string (nullable \u003d true)\n |    |    |-- name: string (nullable \u003d true)\n |    |    |-- notifications_url: string (nullable \u003d true)\n |    |    |-- open_issues: long (nullable \u003d true)\n |    |    |-- open_issues_count: long (nullable \u003d true)\n |    |    |-- owner: struct (nullable \u003d true)\n |    |    |    |-- avatar_url: string (nullable \u003d true)\n |    |    |    |-- events_url: string (nullable \u003d true)\n |    |    |    |-- followers_url: string (nullable \u003d true)\n |    |    |    |-- following_url: string (nullable \u003d true)\n |    |    |    |-- gists_url: string (nullable \u003d true)\n |    |    |    |-- gravatar_id: string (nullable \u003d true)\n |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |-- login: string (nullable \u003d true)\n |    |    |    |-- organizations_url: string (nullable \u003d true)\n |    |    |    |-- received_events_url: string (nullable \u003d true)\n |    |    |    |-- repos_url: string (nullable \u003d true)\n |    |    |    |-- site_admin: boolean (nullable \u003d true)\n |    |    |    |-- starred_url: string (nullable \u003d true)\n |    |    |    |-- subscriptions_url: string (nullable \u003d true)\n |    |    |    |-- type: string (nullable \u003d true)\n |    |    |    |-- url: string (nullable \u003d true)\n |    |    |-- private: boolean (nullable \u003d true)\n |    |    |-- public: boolean (nullable \u003d true)\n |    |    |-- pulls_url: string (nullable \u003d true)\n |    |    |-- pushed_at: string (nullable \u003d true)\n |    |    |-- releases_url: string (nullable \u003d true)\n |    |    |-- size: long (nullable \u003d true)\n |    |    |-- ssh_url: string (nullable \u003d true)\n |    |    |-- stargazers_count: long (nullable \u003d true)\n |    |    |-- stargazers_url: string (nullable \u003d true)\n |    |    |-- statuses_url: string (nullable \u003d true)\n |    |    |-- subscribers_url: string (nullable \u003d true)\n |    |    |-- subscription_url: string (nullable \u003d true)\n |    |    |-- svn_url: string (nullable \u003d true)\n |    |    |-- tags_url: string (nullable \u003d true)\n |    |    |-- teams_url: string (nullable \u003d true)\n |    |    |-- trees_url: string (nullable \u003d true)\n |    |    |-- updated_at: string (nullable \u003d true)\n |    |    |-- url: string (nullable \u003d true)\n |    |    |-- watchers: long (nullable \u003d true)\n |    |    |-- watchers_count: long (nullable \u003d true)\n |    |-- head: string (nullable \u003d true)\n |    |-- issue: struct (nullable \u003d true)\n |    |    |-- assignee: struct (nullable \u003d true)\n |    |    |    |-- avatar_url: string (nullable \u003d true)\n |    |    |    |-- events_url: string (nullable \u003d true)\n |    |    |    |-- followers_url: string (nullable \u003d true)\n |    |    |    |-- following_url: string (nullable \u003d true)\n |    |    |    |-- gists_url: string (nullable \u003d true)\n |    |    |    |-- gravatar_id: string (nullable \u003d true)\n |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |-- login: string (nullable \u003d true)\n |    |    |    |-- organizations_url: string (nullable \u003d true)\n |    |    |    |-- received_events_url: string (nullable \u003d true)\n |    |    |    |-- repos_url: string (nullable \u003d true)\n |    |    |    |-- site_admin: boolean (nullable \u003d true)\n |    |    |    |-- starred_url: string (nullable \u003d true)\n |    |    |    |-- subscriptions_url: string (nullable \u003d true)\n |    |    |    |-- type: string (nullable \u003d true)\n |    |    |    |-- url: string (nullable \u003d true)\n |    |    |-- body: string (nullable \u003d true)\n |    |    |-- closed_at: string (nullable \u003d true)\n |    |    |-- comments: long (nullable \u003d true)\n |    |    |-- comments_url: string (nullable \u003d true)\n |    |    |-- created_at: string (nullable \u003d true)\n |    |    |-- events_url: string (nullable \u003d true)\n |    |    |-- html_url: string (nullable \u003d true)\n |    |    |-- id: long (nullable \u003d true)\n |    |    |-- labels: array (nullable \u003d true)\n |    |    |    |-- element: struct (containsNull \u003d true)\n |    |    |    |    |-- color: string (nullable \u003d true)\n |    |    |    |    |-- name: string (nullable \u003d true)\n |    |    |    |    |-- url: string (nullable \u003d true)\n |    |    |-- labels_url: string (nullable \u003d true)\n |    |    |-- locked: boolean (nullable \u003d true)\n |    |    |-- milestone: struct (nullable \u003d true)\n |    |    |    |-- closed_at: string (nullable \u003d true)\n |    |    |    |-- closed_issues: long (nullable \u003d true)\n |    |    |    |-- created_at: string (nullable \u003d true)\n |    |    |    |-- creator: struct (nullable \u003d true)\n |    |    |    |    |-- avatar_url: string (nullable \u003d true)\n |    |    |    |    |-- events_url: string (nullable \u003d true)\n |    |    |    |    |-- followers_url: string (nullable \u003d true)\n |    |    |    |    |-- following_url: string (nullable \u003d true)\n |    |    |    |    |-- gists_url: string (nullable \u003d true)\n |    |    |    |    |-- gravatar_id: string (nullable \u003d true)\n |    |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |    |-- login: string (nullable \u003d true)\n |    |    |    |    |-- organizations_url: string (nullable \u003d true)\n |    |    |    |    |-- received_events_url: string (nullable \u003d true)\n |    |    |    |    |-- repos_url: string (nullable \u003d true)\n |    |    |    |    |-- site_admin: boolean (nullable \u003d true)\n |    |    |    |    |-- starred_url: string (nullable \u003d true)\n |    |    |    |    |-- subscriptions_url: string (nullable \u003d true)\n |    |    |    |    |-- type: string (nullable \u003d true)\n |    |    |    |    |-- url: string (nullable \u003d true)\n |    |    |    |-- description: string (nullable \u003d true)\n |    |    |    |-- due_on: string (nullable \u003d true)\n |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |-- labels_url: string (nullable \u003d true)\n |    |    |    |-- number: long (nullable \u003d true)\n |    |    |    |-- open_issues: long (nullable \u003d true)\n |    |    |    |-- state: string (nullable \u003d true)\n |    |    |    |-- title: string (nullable \u003d true)\n |    |    |    |-- updated_at: string (nullable \u003d true)\n |    |    |    |-- url: string (nullable \u003d true)\n |    |    |-- number: long (nullable \u003d true)\n |    |    |-- pull_request: struct (nullable \u003d true)\n |    |    |    |-- diff_url: string (nullable \u003d true)\n |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |-- patch_url: string (nullable \u003d true)\n |    |    |    |-- url: string (nullable \u003d true)\n |    |    |-- state: string (nullable \u003d true)\n |    |    |-- title: string (nullable \u003d true)\n |    |    |-- updated_at: string (nullable \u003d true)\n |    |    |-- url: string (nullable \u003d true)\n |    |    |-- user: struct (nullable \u003d true)\n |    |    |    |-- avatar_url: string (nullable \u003d true)\n |    |    |    |-- events_url: string (nullable \u003d true)\n |    |    |    |-- followers_url: string (nullable \u003d true)\n |    |    |    |-- following_url: string (nullable \u003d true)\n |    |    |    |-- gists_url: string (nullable \u003d true)\n |    |    |    |-- gravatar_id: string (nullable \u003d true)\n |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |-- login: string (nullable \u003d true)\n |    |    |    |-- organizations_url: string (nullable \u003d true)\n |    |    |    |-- received_events_url: string (nullable \u003d true)\n |    |    |    |-- repos_url: string (nullable \u003d true)\n |    |    |    |-- site_admin: boolean (nullable \u003d true)\n |    |    |    |-- starred_url: string (nullable \u003d true)\n |    |    |    |-- subscriptions_url: string (nullable \u003d true)\n |    |    |    |-- type: string (nullable \u003d true)\n |    |    |    |-- url: string (nullable \u003d true)\n |    |-- master_branch: string (nullable \u003d true)\n |    |-- member: struct (nullable \u003d true)\n |    |    |-- avatar_url: string (nullable \u003d true)\n |    |    |-- events_url: string (nullable \u003d true)\n |    |    |-- followers_url: string (nullable \u003d true)\n |    |    |-- following_url: string (nullable \u003d true)\n |    |    |-- gists_url: string (nullable \u003d true)\n |    |    |-- gravatar_id: string (nullable \u003d true)\n |    |    |-- html_url: string (nullable \u003d true)\n |    |    |-- id: long (nullable \u003d true)\n |    |    |-- login: string (nullable \u003d true)\n |    |    |-- organizations_url: string (nullable \u003d true)\n |    |    |-- received_events_url: string (nullable \u003d true)\n |    |    |-- repos_url: string (nullable \u003d true)\n |    |    |-- site_admin: boolean (nullable \u003d true)\n |    |    |-- starred_url: string (nullable \u003d true)\n |    |    |-- subscriptions_url: string (nullable \u003d true)\n |    |    |-- type: string (nullable \u003d true)\n |    |    |-- url: string (nullable \u003d true)\n |    |-- number: long (nullable \u003d true)\n |    |-- pages: array (nullable \u003d true)\n |    |    |-- element: struct (containsNull \u003d true)\n |    |    |    |-- action: string (nullable \u003d true)\n |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |-- page_name: string (nullable \u003d true)\n |    |    |    |-- sha: string (nullable \u003d true)\n |    |    |    |-- summary: string (nullable \u003d true)\n |    |    |    |-- title: string (nullable \u003d true)\n |    |-- pull_request: struct (nullable \u003d true)\n |    |    |-- _links: struct (nullable \u003d true)\n |    |    |    |-- comments: struct (nullable \u003d true)\n |    |    |    |    |-- href: string (nullable \u003d true)\n |    |    |    |-- commits: struct (nullable \u003d true)\n |    |    |    |    |-- href: string (nullable \u003d true)\n |    |    |    |-- html: struct (nullable \u003d true)\n |    |    |    |    |-- href: string (nullable \u003d true)\n |    |    |    |-- issue: struct (nullable \u003d true)\n |    |    |    |    |-- href: string (nullable \u003d true)\n |    |    |    |-- review_comment: struct (nullable \u003d true)\n |    |    |    |    |-- href: string (nullable \u003d true)\n |    |    |    |-- review_comments: struct (nullable \u003d true)\n |    |    |    |    |-- href: string (nullable \u003d true)\n |    |    |    |-- self: struct (nullable \u003d true)\n |    |    |    |    |-- href: string (nullable \u003d true)\n |    |    |    |-- statuses: struct (nullable \u003d true)\n |    |    |    |    |-- href: string (nullable \u003d true)\n |    |    |-- additions: long (nullable \u003d true)\n |    |    |-- assignee: struct (nullable \u003d true)\n |    |    |    |-- avatar_url: string (nullable \u003d true)\n |    |    |    |-- events_url: string (nullable \u003d true)\n |    |    |    |-- followers_url: string (nullable \u003d true)\n |    |    |    |-- following_url: string (nullable \u003d true)\n |    |    |    |-- gists_url: string (nullable \u003d true)\n |    |    |    |-- gravatar_id: string (nullable \u003d true)\n |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |-- login: string (nullable \u003d true)\n |    |    |    |-- organizations_url: string (nullable \u003d true)\n |    |    |    |-- received_events_url: string (nullable \u003d true)\n |    |    |    |-- repos_url: string (nullable \u003d true)\n |    |    |    |-- site_admin: boolean (nullable \u003d true)\n |    |    |    |-- starred_url: string (nullable \u003d true)\n |    |    |    |-- subscriptions_url: string (nullable \u003d true)\n |    |    |    |-- type: string (nullable \u003d true)\n |    |    |    |-- url: string (nullable \u003d true)\n |    |    |-- base: struct (nullable \u003d true)\n |    |    |    |-- label: string (nullable \u003d true)\n |    |    |    |-- ref: string (nullable \u003d true)\n |    |    |    |-- repo: struct (nullable \u003d true)\n |    |    |    |    |-- archive_url: string (nullable \u003d true)\n |    |    |    |    |-- assignees_url: string (nullable \u003d true)\n |    |    |    |    |-- blobs_url: string (nullable \u003d true)\n |    |    |    |    |-- branches_url: string (nullable \u003d true)\n |    |    |    |    |-- clone_url: string (nullable \u003d true)\n |    |    |    |    |-- collaborators_url: string (nullable \u003d true)\n |    |    |    |    |-- comments_url: string (nullable \u003d true)\n |    |    |    |    |-- commits_url: string (nullable \u003d true)\n |    |    |    |    |-- compare_url: string (nullable \u003d true)\n |    |    |    |    |-- contents_url: string (nullable \u003d true)\n |    |    |    |    |-- contributors_url: string (nullable \u003d true)\n |    |    |    |    |-- created_at: string (nullable \u003d true)\n |    |    |    |    |-- default_branch: string (nullable \u003d true)\n |    |    |    |    |-- description: string (nullable \u003d true)\n |    |    |    |    |-- downloads_url: string (nullable \u003d true)\n |    |    |    |    |-- events_url: string (nullable \u003d true)\n |    |    |    |    |-- fork: boolean (nullable \u003d true)\n |    |    |    |    |-- forks: long (nullable \u003d true)\n |    |    |    |    |-- forks_count: long (nullable \u003d true)\n |    |    |    |    |-- forks_url: string (nullable \u003d true)\n |    |    |    |    |-- full_name: string (nullable \u003d true)\n |    |    |    |    |-- git_commits_url: string (nullable \u003d true)\n |    |    |    |    |-- git_refs_url: string (nullable \u003d true)\n |    |    |    |    |-- git_tags_url: string (nullable \u003d true)\n |    |    |    |    |-- git_url: string (nullable \u003d true)\n |    |    |    |    |-- has_downloads: boolean (nullable \u003d true)\n |    |    |    |    |-- has_issues: boolean (nullable \u003d true)\n |    |    |    |    |-- has_pages: boolean (nullable \u003d true)\n |    |    |    |    |-- has_wiki: boolean (nullable \u003d true)\n |    |    |    |    |-- homepage: string (nullable \u003d true)\n |    |    |    |    |-- hooks_url: string (nullable \u003d true)\n |    |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |    |-- issue_comment_url: string (nullable \u003d true)\n |    |    |    |    |-- issue_events_url: string (nullable \u003d true)\n |    |    |    |    |-- issues_url: string (nullable \u003d true)\n |    |    |    |    |-- keys_url: string (nullable \u003d true)\n |    |    |    |    |-- labels_url: string (nullable \u003d true)\n |    |    |    |    |-- language: string (nullable \u003d true)\n |    |    |    |    |-- languages_url: string (nullable \u003d true)\n |    |    |    |    |-- merges_url: string (nullable \u003d true)\n |    |    |    |    |-- milestones_url: string (nullable \u003d true)\n |    |    |    |    |-- mirror_url: string (nullable \u003d true)\n |    |    |    |    |-- name: string (nullable \u003d true)\n |    |    |    |    |-- notifications_url: string (nullable \u003d true)\n |    |    |    |    |-- open_issues: long (nullable \u003d true)\n |    |    |    |    |-- open_issues_count: long (nullable \u003d true)\n |    |    |    |    |-- owner: struct (nullable \u003d true)\n |    |    |    |    |    |-- avatar_url: string (nullable \u003d true)\n |    |    |    |    |    |-- events_url: string (nullable \u003d true)\n |    |    |    |    |    |-- followers_url: string (nullable \u003d true)\n |    |    |    |    |    |-- following_url: string (nullable \u003d true)\n |    |    |    |    |    |-- gists_url: string (nullable \u003d true)\n |    |    |    |    |    |-- gravatar_id: string (nullable \u003d true)\n |    |    |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |    |    |-- login: string (nullable \u003d true)\n |    |    |    |    |    |-- organizations_url: string (nullable \u003d true)\n |    |    |    |    |    |-- received_events_url: string (nullable \u003d true)\n |    |    |    |    |    |-- repos_url: string (nullable \u003d true)\n |    |    |    |    |    |-- site_admin: boolean (nullable \u003d true)\n |    |    |    |    |    |-- starred_url: string (nullable \u003d true)\n |    |    |    |    |    |-- subscriptions_url: string (nullable \u003d true)\n |    |    |    |    |    |-- type: string (nullable \u003d true)\n |    |    |    |    |    |-- url: string (nullable \u003d true)\n |    |    |    |    |-- private: boolean (nullable \u003d true)\n |    |    |    |    |-- pulls_url: string (nullable \u003d true)\n |    |    |    |    |-- pushed_at: string (nullable \u003d true)\n |    |    |    |    |-- releases_url: string (nullable \u003d true)\n |    |    |    |    |-- size: long (nullable \u003d true)\n |    |    |    |    |-- ssh_url: string (nullable \u003d true)\n |    |    |    |    |-- stargazers_count: long (nullable \u003d true)\n |    |    |    |    |-- stargazers_url: string (nullable \u003d true)\n |    |    |    |    |-- statuses_url: string (nullable \u003d true)\n |    |    |    |    |-- subscribers_url: string (nullable \u003d true)\n |    |    |    |    |-- subscription_url: string (nullable \u003d true)\n |    |    |    |    |-- svn_url: string (nullable \u003d true)\n |    |    |    |    |-- tags_url: string (nullable \u003d true)\n |    |    |    |    |-- teams_url: string (nullable \u003d true)\n |    |    |    |    |-- trees_url: string (nullable \u003d true)\n |    |    |    |    |-- updated_at: string (nullable \u003d true)\n |    |    |    |    |-- url: string (nullable \u003d true)\n |    |    |    |    |-- watchers: long (nullable \u003d true)\n |    |    |    |    |-- watchers_count: long (nullable \u003d true)\n |    |    |    |-- sha: string (nullable \u003d true)\n |    |    |    |-- user: struct (nullable \u003d true)\n |    |    |    |    |-- avatar_url: string (nullable \u003d true)\n |    |    |    |    |-- events_url: string (nullable \u003d true)\n |    |    |    |    |-- followers_url: string (nullable \u003d true)\n |    |    |    |    |-- following_url: string (nullable \u003d true)\n |    |    |    |    |-- gists_url: string (nullable \u003d true)\n |    |    |    |    |-- gravatar_id: string (nullable \u003d true)\n |    |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |    |-- login: string (nullable \u003d true)\n |    |    |    |    |-- organizations_url: string (nullable \u003d true)\n |    |    |    |    |-- received_events_url: string (nullable \u003d true)\n |    |    |    |    |-- repos_url: string (nullable \u003d true)\n |    |    |    |    |-- site_admin: boolean (nullable \u003d true)\n |    |    |    |    |-- starred_url: string (nullable \u003d true)\n |    |    |    |    |-- subscriptions_url: string (nullable \u003d true)\n |    |    |    |    |-- type: string (nullable \u003d true)\n |    |    |    |    |-- url: string (nullable \u003d true)\n |    |    |-- body: string (nullable \u003d true)\n |    |    |-- changed_files: long (nullable \u003d true)\n |    |    |-- closed_at: string (nullable \u003d true)\n |    |    |-- comments: long (nullable \u003d true)\n |    |    |-- comments_url: string (nullable \u003d true)\n |    |    |-- commits: long (nullable \u003d true)\n |    |    |-- commits_url: string (nullable \u003d true)\n |    |    |-- created_at: string (nullable \u003d true)\n |    |    |-- deletions: long (nullable \u003d true)\n |    |    |-- diff_url: string (nullable \u003d true)\n |    |    |-- head: struct (nullable \u003d true)\n |    |    |    |-- label: string (nullable \u003d true)\n |    |    |    |-- ref: string (nullable \u003d true)\n |    |    |    |-- repo: struct (nullable \u003d true)\n |    |    |    |    |-- archive_url: string (nullable \u003d true)\n |    |    |    |    |-- assignees_url: string (nullable \u003d true)\n |    |    |    |    |-- blobs_url: string (nullable \u003d true)\n |    |    |    |    |-- branches_url: string (nullable \u003d true)\n |    |    |    |    |-- clone_url: string (nullable \u003d true)\n |    |    |    |    |-- collaborators_url: string (nullable \u003d true)\n |    |    |    |    |-- comments_url: string (nullable \u003d true)\n |    |    |    |    |-- commits_url: string (nullable \u003d true)\n |    |    |    |    |-- compare_url: string (nullable \u003d true)\n |    |    |    |    |-- contents_url: string (nullable \u003d true)\n |    |    |    |    |-- contributors_url: string (nullable \u003d true)\n |    |    |    |    |-- created_at: string (nullable \u003d true)\n |    |    |    |    |-- default_branch: string (nullable \u003d true)\n |    |    |    |    |-- description: string (nullable \u003d true)\n |    |    |    |    |-- downloads_url: string (nullable \u003d true)\n |    |    |    |    |-- events_url: string (nullable \u003d true)\n |    |    |    |    |-- fork: boolean (nullable \u003d true)\n |    |    |    |    |-- forks: long (nullable \u003d true)\n |    |    |    |    |-- forks_count: long (nullable \u003d true)\n |    |    |    |    |-- forks_url: string (nullable \u003d true)\n |    |    |    |    |-- full_name: string (nullable \u003d true)\n |    |    |    |    |-- git_commits_url: string (nullable \u003d true)\n |    |    |    |    |-- git_refs_url: string (nullable \u003d true)\n |    |    |    |    |-- git_tags_url: string (nullable \u003d true)\n |    |    |    |    |-- git_url: string (nullable \u003d true)\n |    |    |    |    |-- has_downloads: boolean (nullable \u003d true)\n |    |    |    |    |-- has_issues: boolean (nullable \u003d true)\n |    |    |    |    |-- has_pages: boolean (nullable \u003d true)\n |    |    |    |    |-- has_wiki: boolean (nullable \u003d true)\n |    |    |    |    |-- homepage: string (nullable \u003d true)\n |    |    |    |    |-- hooks_url: string (nullable \u003d true)\n |    |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |    |-- issue_comment_url: string (nullable \u003d true)\n |    |    |    |    |-- issue_events_url: string (nullable \u003d true)\n |    |    |    |    |-- issues_url: string (nullable \u003d true)\n |    |    |    |    |-- keys_url: string (nullable \u003d true)\n |    |    |    |    |-- labels_url: string (nullable \u003d true)\n |    |    |    |    |-- language: string (nullable \u003d true)\n |    |    |    |    |-- languages_url: string (nullable \u003d true)\n |    |    |    |    |-- merges_url: string (nullable \u003d true)\n |    |    |    |    |-- milestones_url: string (nullable \u003d true)\n |    |    |    |    |-- mirror_url: string (nullable \u003d true)\n |    |    |    |    |-- name: string (nullable \u003d true)\n |    |    |    |    |-- notifications_url: string (nullable \u003d true)\n |    |    |    |    |-- open_issues: long (nullable \u003d true)\n |    |    |    |    |-- open_issues_count: long (nullable \u003d true)\n |    |    |    |    |-- owner: struct (nullable \u003d true)\n |    |    |    |    |    |-- avatar_url: string (nullable \u003d true)\n |    |    |    |    |    |-- events_url: string (nullable \u003d true)\n |    |    |    |    |    |-- followers_url: string (nullable \u003d true)\n |    |    |    |    |    |-- following_url: string (nullable \u003d true)\n |    |    |    |    |    |-- gists_url: string (nullable \u003d true)\n |    |    |    |    |    |-- gravatar_id: string (nullable \u003d true)\n |    |    |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |    |    |-- login: string (nullable \u003d true)\n |    |    |    |    |    |-- organizations_url: string (nullable \u003d true)\n |    |    |    |    |    |-- received_events_url: string (nullable \u003d true)\n |    |    |    |    |    |-- repos_url: string (nullable \u003d true)\n |    |    |    |    |    |-- site_admin: boolean (nullable \u003d true)\n |    |    |    |    |    |-- starred_url: string (nullable \u003d true)\n |    |    |    |    |    |-- subscriptions_url: string (nullable \u003d true)\n |    |    |    |    |    |-- type: string (nullable \u003d true)\n |    |    |    |    |    |-- url: string (nullable \u003d true)\n |    |    |    |    |-- private: boolean (nullable \u003d true)\n |    |    |    |    |-- pulls_url: string (nullable \u003d true)\n |    |    |    |    |-- pushed_at: string (nullable \u003d true)\n |    |    |    |    |-- releases_url: string (nullable \u003d true)\n |    |    |    |    |-- size: long (nullable \u003d true)\n |    |    |    |    |-- ssh_url: string (nullable \u003d true)\n |    |    |    |    |-- stargazers_count: long (nullable \u003d true)\n |    |    |    |    |-- stargazers_url: string (nullable \u003d true)\n |    |    |    |    |-- statuses_url: string (nullable \u003d true)\n |    |    |    |    |-- subscribers_url: string (nullable \u003d true)\n |    |    |    |    |-- subscription_url: string (nullable \u003d true)\n |    |    |    |    |-- svn_url: string (nullable \u003d true)\n |    |    |    |    |-- tags_url: string (nullable \u003d true)\n |    |    |    |    |-- teams_url: string (nullable \u003d true)\n |    |    |    |    |-- trees_url: string (nullable \u003d true)\n |    |    |    |    |-- updated_at: string (nullable \u003d true)\n |    |    |    |    |-- url: string (nullable \u003d true)\n |    |    |    |    |-- watchers: long (nullable \u003d true)\n |    |    |    |    |-- watchers_count: long (nullable \u003d true)\n |    |    |    |-- sha: string (nullable \u003d true)\n |    |    |    |-- user: struct (nullable \u003d true)\n |    |    |    |    |-- avatar_url: string (nullable \u003d true)\n |    |    |    |    |-- events_url: string (nullable \u003d true)\n |    |    |    |    |-- followers_url: string (nullable \u003d true)\n |    |    |    |    |-- following_url: string (nullable \u003d true)\n |    |    |    |    |-- gists_url: string (nullable \u003d true)\n |    |    |    |    |-- gravatar_id: string (nullable \u003d true)\n |    |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |    |-- login: string (nullable \u003d true)\n |    |    |    |    |-- organizations_url: string (nullable \u003d true)\n |    |    |    |    |-- received_events_url: string (nullable \u003d true)\n |    |    |    |    |-- repos_url: string (nullable \u003d true)\n |    |    |    |    |-- site_admin: boolean (nullable \u003d true)\n |    |    |    |    |-- starred_url: string (nullable \u003d true)\n |    |    |    |    |-- subscriptions_url: string (nullable \u003d true)\n |    |    |    |    |-- type: string (nullable \u003d true)\n |    |    |    |    |-- url: string (nullable \u003d true)\n |    |    |-- html_url: string (nullable \u003d true)\n |    |    |-- id: long (nullable \u003d true)\n |    |    |-- issue_url: string (nullable \u003d true)\n |    |    |-- locked: boolean (nullable \u003d true)\n |    |    |-- merge_commit_sha: string (nullable \u003d true)\n |    |    |-- mergeable: boolean (nullable \u003d true)\n |    |    |-- mergeable_state: string (nullable \u003d true)\n |    |    |-- merged: boolean (nullable \u003d true)\n |    |    |-- merged_at: string (nullable \u003d true)\n |    |    |-- merged_by: struct (nullable \u003d true)\n |    |    |    |-- avatar_url: string (nullable \u003d true)\n |    |    |    |-- events_url: string (nullable \u003d true)\n |    |    |    |-- followers_url: string (nullable \u003d true)\n |    |    |    |-- following_url: string (nullable \u003d true)\n |    |    |    |-- gists_url: string (nullable \u003d true)\n |    |    |    |-- gravatar_id: string (nullable \u003d true)\n |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |-- login: string (nullable \u003d true)\n |    |    |    |-- organizations_url: string (nullable \u003d true)\n |    |    |    |-- received_events_url: string (nullable \u003d true)\n |    |    |    |-- repos_url: string (nullable \u003d true)\n |    |    |    |-- site_admin: boolean (nullable \u003d true)\n |    |    |    |-- starred_url: string (nullable \u003d true)\n |    |    |    |-- subscriptions_url: string (nullable \u003d true)\n |    |    |    |-- type: string (nullable \u003d true)\n |    |    |    |-- url: string (nullable \u003d true)\n |    |    |-- milestone: struct (nullable \u003d true)\n |    |    |    |-- closed_at: string (nullable \u003d true)\n |    |    |    |-- closed_issues: long (nullable \u003d true)\n |    |    |    |-- created_at: string (nullable \u003d true)\n |    |    |    |-- creator: struct (nullable \u003d true)\n |    |    |    |    |-- avatar_url: string (nullable \u003d true)\n |    |    |    |    |-- events_url: string (nullable \u003d true)\n |    |    |    |    |-- followers_url: string (nullable \u003d true)\n |    |    |    |    |-- following_url: string (nullable \u003d true)\n |    |    |    |    |-- gists_url: string (nullable \u003d true)\n |    |    |    |    |-- gravatar_id: string (nullable \u003d true)\n |    |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |    |-- login: string (nullable \u003d true)\n |    |    |    |    |-- organizations_url: string (nullable \u003d true)\n |    |    |    |    |-- received_events_url: string (nullable \u003d true)\n |    |    |    |    |-- repos_url: string (nullable \u003d true)\n |    |    |    |    |-- site_admin: boolean (nullable \u003d true)\n |    |    |    |    |-- starred_url: string (nullable \u003d true)\n |    |    |    |    |-- subscriptions_url: string (nullable \u003d true)\n |    |    |    |    |-- type: string (nullable \u003d true)\n |    |    |    |    |-- url: string (nullable \u003d true)\n |    |    |    |-- description: string (nullable \u003d true)\n |    |    |    |-- due_on: string (nullable \u003d true)\n |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |-- labels_url: string (nullable \u003d true)\n |    |    |    |-- number: long (nullable \u003d true)\n |    |    |    |-- open_issues: long (nullable \u003d true)\n |    |    |    |-- state: string (nullable \u003d true)\n |    |    |    |-- title: string (nullable \u003d true)\n |    |    |    |-- updated_at: string (nullable \u003d true)\n |    |    |    |-- url: string (nullable \u003d true)\n |    |    |-- number: long (nullable \u003d true)\n |    |    |-- patch_url: string (nullable \u003d true)\n |    |    |-- review_comment_url: string (nullable \u003d true)\n |    |    |-- review_comments: long (nullable \u003d true)\n |    |    |-- review_comments_url: string (nullable \u003d true)\n |    |    |-- state: string (nullable \u003d true)\n |    |    |-- statuses_url: string (nullable \u003d true)\n |    |    |-- title: string (nullable \u003d true)\n |    |    |-- updated_at: string (nullable \u003d true)\n |    |    |-- url: string (nullable \u003d true)\n |    |    |-- user: struct (nullable \u003d true)\n |    |    |    |-- avatar_url: string (nullable \u003d true)\n |    |    |    |-- events_url: string (nullable \u003d true)\n |    |    |    |-- followers_url: string (nullable \u003d true)\n |    |    |    |-- following_url: string (nullable \u003d true)\n |    |    |    |-- gists_url: string (nullable \u003d true)\n |    |    |    |-- gravatar_id: string (nullable \u003d true)\n |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |-- login: string (nullable \u003d true)\n |    |    |    |-- organizations_url: string (nullable \u003d true)\n |    |    |    |-- received_events_url: string (nullable \u003d true)\n |    |    |    |-- repos_url: string (nullable \u003d true)\n |    |    |    |-- site_admin: boolean (nullable \u003d true)\n |    |    |    |-- starred_url: string (nullable \u003d true)\n |    |    |    |-- subscriptions_url: string (nullable \u003d true)\n |    |    |    |-- type: string (nullable \u003d true)\n |    |    |    |-- url: string (nullable \u003d true)\n |    |-- push_id: long (nullable \u003d true)\n |    |-- pusher_type: string (nullable \u003d true)\n |    |-- ref: string (nullable \u003d true)\n |    |-- ref_type: string (nullable \u003d true)\n |    |-- release: struct (nullable \u003d true)\n |    |    |-- assets: array (nullable \u003d true)\n |    |    |    |-- element: struct (containsNull \u003d true)\n |    |    |    |    |-- browser_download_url: string (nullable \u003d true)\n |    |    |    |    |-- content_type: string (nullable \u003d true)\n |    |    |    |    |-- created_at: string (nullable \u003d true)\n |    |    |    |    |-- download_count: long (nullable \u003d true)\n |    |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |    |-- label: string (nullable \u003d true)\n |    |    |    |    |-- name: string (nullable \u003d true)\n |    |    |    |    |-- size: long (nullable \u003d true)\n |    |    |    |    |-- state: string (nullable \u003d true)\n |    |    |    |    |-- updated_at: string (nullable \u003d true)\n |    |    |    |    |-- uploader: struct (nullable \u003d true)\n |    |    |    |    |    |-- avatar_url: string (nullable \u003d true)\n |    |    |    |    |    |-- events_url: string (nullable \u003d true)\n |    |    |    |    |    |-- followers_url: string (nullable \u003d true)\n |    |    |    |    |    |-- following_url: string (nullable \u003d true)\n |    |    |    |    |    |-- gists_url: string (nullable \u003d true)\n |    |    |    |    |    |-- gravatar_id: string (nullable \u003d true)\n |    |    |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |    |    |-- login: string (nullable \u003d true)\n |    |    |    |    |    |-- organizations_url: string (nullable \u003d true)\n |    |    |    |    |    |-- received_events_url: string (nullable \u003d true)\n |    |    |    |    |    |-- repos_url: string (nullable \u003d true)\n |    |    |    |    |    |-- site_admin: boolean (nullable \u003d true)\n |    |    |    |    |    |-- starred_url: string (nullable \u003d true)\n |    |    |    |    |    |-- subscriptions_url: string (nullable \u003d true)\n |    |    |    |    |    |-- type: string (nullable \u003d true)\n |    |    |    |    |    |-- url: string (nullable \u003d true)\n |    |    |    |    |-- url: string (nullable \u003d true)\n |    |    |-- assets_url: string (nullable \u003d true)\n |    |    |-- author: struct (nullable \u003d true)\n |    |    |    |-- avatar_url: string (nullable \u003d true)\n |    |    |    |-- events_url: string (nullable \u003d true)\n |    |    |    |-- followers_url: string (nullable \u003d true)\n |    |    |    |-- following_url: string (nullable \u003d true)\n |    |    |    |-- gists_url: string (nullable \u003d true)\n |    |    |    |-- gravatar_id: string (nullable \u003d true)\n |    |    |    |-- html_url: string (nullable \u003d true)\n |    |    |    |-- id: long (nullable \u003d true)\n |    |    |    |-- login: string (nullable \u003d true)\n |    |    |    |-- organizations_url: string (nullable \u003d true)\n |    |    |    |-- received_events_url: string (nullable \u003d true)\n |    |    |    |-- repos_url: string (nullable \u003d true)\n |    |    |    |-- site_admin: boolean (nullable \u003d true)\n |    |    |    |-- starred_url: string (nullable \u003d true)\n |    |    |    |-- subscriptions_url: string (nullable \u003d true)\n |    |    |    |-- type: string (nullable \u003d true)\n |    |    |    |-- url: string (nullable \u003d true)\n |    |    |-- body: string (nullable \u003d true)\n |    |    |-- created_at: string (nullable \u003d true)\n |    |    |-- draft: boolean (nullable \u003d true)\n |    |    |-- html_url: string (nullable \u003d true)\n |    |    |-- id: long (nullable \u003d true)\n |    |    |-- name: string (nullable \u003d true)\n |    |    |-- prerelease: boolean (nullable \u003d true)\n |    |    |-- published_at: string (nullable \u003d true)\n |    |    |-- tag_name: string (nullable \u003d true)\n |    |    |-- tarball_url: string (nullable \u003d true)\n |    |    |-- target_commitish: string (nullable \u003d true)\n |    |    |-- upload_url: string (nullable \u003d true)\n |    |    |-- url: string (nullable \u003d true)\n |    |    |-- zipball_url: string (nullable \u003d true)\n |    |-- size: long (nullable \u003d true)\n |-- public: boolean (nullable \u003d true)\n |-- repo: struct (nullable \u003d true)\n |    |-- id: long (nullable \u003d true)\n |    |-- name: string (nullable \u003d true)\n |    |-- url: string (nullable \u003d true)\n |-- type: string (nullable \u003d true)\n\n"
+      },
+      "dateCreated": "Sep 22, 2015 3:40:17 PM",
+      "dateStarted": "Sep 22, 2015 3:40:29 PM",
+      "dateFinished": "Sep 22, 2015 3:40:30 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442922543776_940909177",
+      "id": "20150922-204903_361416782",
+      "dateCreated": "Sep 22, 2015 8:49:03 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "4. Filter the data",
+      "text": "val orgsDF \u003d df.filter(\"type \u003d \u0027PublicEvent\u0027\")\n               .filter(\"org.login \u003c\u003e \u0027null\u0027\")\n               .filter(\"org.login \u003d (\u0027google\u0027 or  \u0027facebook\u0027 or \u0027linkedin\u0027 )\") // Interesting Companies\norgsDF.registerTempTable(\"orgs\")",
+      "dateUpdated": "Sep 25, 2015 5:39:54 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorMode": "ace/mode/scala",
+        "tableHide": true,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442897482092_1295960716",
+      "id": "20150922-135122_1724769739",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "orgsDF: org.apache.spark.sql.DataFrame \u003d [actor: struct\u003cavatar_url:string,gravatar_id:string,id:bigint,login:string,url:string\u003e, created_at: string, id: string, org: struct\u003cavatar_url:string,gravatar_id:string,id:bigint,login:string,url:string\u003e, payload: struct\u003caction:string,before:string,comment:struct\u003c_links:struct\u003chtml:struct\u003chref:string\u003e,pull_request:struct\u003chref:string\u003e,self:struct\u003chref:string\u003e\u003e,body:string,commit_id:string,created_at:string,diff_hunk:string,html_url:string,id:bigint,issue_url:string,line:bigint,original_commit_id:string,original_position:bigint,path:string,position:bigint,pull_request_url:string,updated_at:string,url:string,user:struct\u003cavatar_url:string,events_url:string,followers_url:string,following_url:string,gists_url:string,gravatar_id:string,html_url:string,i..."
+      },
+      "dateCreated": "Sep 22, 2015 1:51:22 PM",
+      "dateStarted": "Sep 25, 2015 5:39:54 PM",
+      "dateFinished": "Sep 25, 2015 5:39:54 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "",
+      "text": "",
+      "dateUpdated": "Sep 25, 2015 5:40:03 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorMode": "ace/mode/scala",
+        "tableHide": false,
+        "title": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1443167161481_1457657287",
+      "id": "20150925-164601_2017738258",
+      "dateCreated": "Sep 25, 2015 4:46:01 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "5. Github API call",
+      "text": "import scalaj.http.Http\nval repos \u003d orgsDF.select(\"repo.url\").map { column \u003d\u003e\n  // https://developer.github.com/v3/auth/#basic-authentication - oAuth or personal access token\n  Http(column.getAs[String](\"url\")).auth(\"bzz\", \"<your-token>\").asString.body\n}\n\nrepos.saveAsTextFile(s\"$date-repos\")\nval reposDF \u003d sqlc.read.json(s\"$date-repos\")\nreposDF.registerTempTable(\"repos\")",
+      "dateUpdated": "Sep 25, 2015 5:41:02 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorMode": "ace/mode/scala",
+        "tableHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442907442980_2108196219",
+      "id": "20150922-163722_1027544949",
+      "result": {
+        "code": "ERROR",
+        "type": "TEXT",
+        "msg": "\u003cconsole\u003e:21: error: not found: value scalaj\n       import scalaj.http.Http\n              ^\n"
+      },
+      "dateCreated": "Sep 22, 2015 4:37:22 PM",
+      "dateStarted": "Sep 25, 2015 5:40:51 PM",
+      "dateFinished": "Sep 25, 2015 5:40:51 PM",
+      "status": "ERROR",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "6. Join over the Github API call",
+      "text": "val repos \u003d reposDF.select(\"id\", \"html_url\", \"created_at\", \"description\", \"language\").as(\u0027repo)\nval orgs \u003d orgsDF.select(\"repo.id\", \"repo.name\", \"org.avatar_url\").as(\u0027org)\nval report \u003d repos.join(orgs)\n                  .where($\"repo.id\" \u003d\u003d\u003d $\"org.id\")\n                  .orderBy($\"name\")\nreport.registerTempTable(\"report\")",
+      "dateUpdated": "Sep 23, 2015 5:20:56 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true,
+        "tableHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442911875119_641573559",
+      "id": "20150922-175115_352378635",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "repos: org.apache.spark.sql.DataFrame \u003d [id: bigint, html_url: string, created_at: string, description: string, language: string]\norgs: org.apache.spark.sql.DataFrame \u003d [id: bigint, name: string, avatar_url: string]\nreport: org.apache.spark.sql.DataFrame \u003d [id: bigint, html_url: string, created_at: string, description: string, language: string, id: bigint, name: string, avatar_url: string]\n"
+      },
+      "dateCreated": "Sep 22, 2015 5:51:15 PM",
+      "dateStarted": "Sep 23, 2015 5:20:56 PM",
+      "dateFinished": "Sep 23, 2015 5:20:58 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "7. Generate report Preview",
+      "text": "def nonEmpty(s: String) \u003d if (s \u003d\u003d null) \"\" else s\n\nval reportTemplate \u003d report map { columns \u003d\u003e\n val name \u003d columns.getAs[String](\"name\")\n val url \u003d columns.getAs[String](\"html_url\")\n val img \u003d columns.getAs[String](\"avatar_url\")\n val lang \u003d columns.getAs[String](\"language\")\n val descr \u003d columns.getAs[String](\"description\")\n Seq(s\"%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027$img\u0027\u003e\u003c/img\u003e\",\n     s\"%html \u003ca href\u003d\u0027$url\u0027\u003e$name\u003c/a\u003e\",\n     nonEmpty(lang), \n     nonEmpty(descr)\n     ) mkString(\"\\t\")\n} collect() mkString(\"\\n\")\n",
+      "dateUpdated": "Sep 23, 2015 8:42:32 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [
+            {
+              "name": "img\\trepository\\n",
+              "index": 0.0,
+              "aggr": "sum"
+            }
+          ],
+          "values": [],
+          "groups": [],
+          "scatter": {
+            "xAxis": {
+              "name": "img\\trepository\\n",
+              "index": 0.0,
+              "aggr": "sum"
+            }
+          }
+        },
+        "editorMode": "ace/mode/scala",
+        "tableHide": true,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442921055417_-141136069",
+      "id": "20150922-202415_1633289861",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/2131181?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/BitFountain/InstaCam\u0027\u003eBitFountain/InstaCam\u003c/a\u003e\tJava\t\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/2738430?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/Genius/flip-the-script\u0027\u003eGenius/flip-the-script\u003c/a\u003e\tJavaScript\t\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/2810941?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/GoogleCloudPlatform/appengine-blobstore-python\u0027\u003eGoogleCloudPlatform/appengine-blobstore-python\u003c/a\u003e\tPython\t\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/2810941?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/GoogleCloudPlatform/..."
+      },
+      "dateCreated": "Sep 22, 2015 8:24:15 PM",
+      "dateStarted": "Sep 23, 2015 8:42:22 PM",
+      "dateFinished": "Sep 23, 2015 8:42:28 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "println(\"%table img\\trepository\\tlanguage\\tdescription\\n\" + reportTemplate)\n",
+      "dateUpdated": "Sep 23, 2015 8:42:36 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 660.0,
+          "optionOpen": false,
+          "keys": [
+            {
+              "name": "img",
+              "index": 0.0,
+              "aggr": "sum"
+            }
+          ],
+          "values": [
+            {
+              "name": "repository",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          ],
+          "groups": [],
+          "scatter": {
+            "xAxis": {
+              "name": "img",
+              "index": 0.0,
+              "aggr": "sum"
+            },
+            "yAxis": {
+              "name": "repository",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          }
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442906328921_-1495719369",
+      "id": "20150922-161848_286243826",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TABLE",
+        "msg": "img\trepository\tlanguage\tdescription\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/2131181?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/BitFountain/InstaCam\u0027\u003eBitFountain/InstaCam\u003c/a\u003e\tJava\t\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/2738430?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/Genius/flip-the-script\u0027\u003eGenius/flip-the-script\u003c/a\u003e\tJavaScript\t\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/2810941?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/GoogleCloudPlatform/appengine-blobstore-python\u0027\u003eGoogleCloudPlatform/appengine-blobstore-python\u003c/a\u003e\tPython\t\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/2810941?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/GoogleCloudPlatform/appengine-multitenancy-python\u0027\u003eGoogleCloudPlatform/appengine-multitenancy-python\u003c/a\u003e\tPython\t\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/8248634?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/LeagueSharp/LeagueSharp.Loader\u0027\u003eLeagueSharp/LeagueSharp.Loader\u003c/a\u003e\tC#\t\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/3723931?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/datamade/leaflet-searchable-map-template\u0027\u003edatamade/leaflet-searchable-map-template\u003c/a\u003e\tJavaScript\t\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/69631?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/facebook/device-year-class\u0027\u003efacebook/device-year-class\u003c/a\u003e\tJava\tA library that analyzes an Android device\u0027s specifications and calculates which year the device would be considered \"high end”.\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/69631?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/facebook/fresco\u0027\u003efacebook/fresco\u003c/a\u003e\tJava\tAn Android library for managing images and the memory they use.\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/69631?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/facebook/network-connection-class\u0027\u003efacebook/network-connection-class\u003c/a\u003e\tJava\tListen to current network traffic in the app and categorize the quality of the network.\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/4227181?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/flagshipcompany/silex-helpers\u0027\u003eflagshipcompany/silex-helpers\u003c/a\u003e\tPHP\t\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/1342004?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/google/primarysources\u0027\u003egoogle/primarysources\u003c/a\u003e\tC++\t\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/1744073?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/gratipay/security-2a443f\u0027\u003egratipay/security-2a443f\u003c/a\u003e\t\tinsecure protocols / weak ciphers vulnerability\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/1031247?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/gwu-libraries/baggins\u0027\u003egwu-libraries/baggins\u003c/a\u003e\tPython\t\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/9573830?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/info-com/econtext-api-python-client\u0027\u003einfo-com/econtext-api-python-client\u003c/a\u003e\tPython\teContext API Client in Python\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/922055?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/levelsix/aoc2\u0027\u003elevelsix/aoc2\u003c/a\u003e\tC#\tAge of Chaos 2 in Unity\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/357098?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/linkedin/JTune\u0027\u003elinkedin/JTune\u003c/a\u003e\tPython\tA high precision Java CMS optimizer\n%html \u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/8461035?\u0027\u003e\u003c/img\u003e\t%html \u003ca href\u003d\u0027https://github.com/samsungsamiio/samitrials-ios\u0027\u003esamsungsamiio/samitrials-ios\u003c/a\u003e\tObjective-C\tiOS SDK for SAMI Trials\n"
+      },
+      "dateCreated": "Sep 22, 2015 4:18:48 PM",
+      "dateStarted": "Sep 23, 2015 8:42:36 PM",
+      "dateFinished": "Sep 23, 2015 8:42:39 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Generate Final report",
+      "text": "val emailReport \u003d report map { columns \u003d\u003e\n val name \u003d columns.getAs[String](\"name\")\n val url \u003d columns.getAs[String](\"html_url\")\n val img \u003d columns.getAs[String](\"avatar_url\")\n val lang \u003d columns.getAs[String](\"language\")\n val descr \u003d columns.getAs[String](\"description\")\n val row \u003d Seq(s\"\u003cimg style\u003d\u0027max-height:20px;\u0027 src\u003d\u0027$img\u0027\u003e\u003c/img\u003e\",\n     s\"\u003ca href\u003d\u0027$url\u0027\u003e$name\u003c/a\u003e\",\n     nonEmpty(lang), \n     nonEmpty(descr)\n     ) mkString(\"\u003c/td\u003e\u003ctd\u003e\")\n s\"\u003ctr\u003e\u003ctd\u003e$row\u003c/td\u003e\u003c/tr\u003e\"\n} collect() mkString(\"\\n\")\n",
+      "dateUpdated": "Sep 23, 2015 8:47:41 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true,
+        "tableHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1443008456430_888599486",
+      "id": "20150923-204056_503661891",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "emailReport: String \u003d \n\u003ctr\u003e\u003ctd\u003e\u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/2131181?\u0027\u003e\u003c/img\u003e\u003c/td\u003e\u003ctd\u003e\u003ca href\u003d\u0027https://github.com/BitFountain/InstaCam\u0027\u003eBitFountain/InstaCam\u003c/a\u003e\u003c/td\u003e\u003ctd\u003eJava\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\n\u003ctr\u003e\u003ctd\u003e\u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/2738430?\u0027\u003e\u003c/img\u003e\u003c/td\u003e\u003ctd\u003e\u003ca href\u003d\u0027https://github.com/Genius/flip-the-script\u0027\u003eGenius/flip-the-script\u003c/a\u003e\u003c/td\u003e\u003ctd\u003eJavaScript\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\n\u003ctr\u003e\u003ctd\u003e\u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/2810941?\u0027\u003e\u003c/img\u003e\u003c/td\u003e\u003ctd\u003e\u003ca href\u003d\u0027https://github.com/GoogleCloudPlatform/appengine-blobstore-python\u0027\u003eGoogleCloudPlatform/appengine-blobstore-python\u003c/a\u003e\u003c/td\u003e\u003ctd\u003ePython\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\n\u003ctr\u003e\u003ctd\u003e\u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.github..."
+      },
+      "dateCreated": "Sep 23, 2015 8:40:56 PM",
+      "dateStarted": "Sep 23, 2015 8:44:29 PM",
+      "dateFinished": "Sep 23, 2015 8:44:33 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "8. Send by email",
+      "text": "val emailTemplate \u003d s\"\"\"\n\u003c!doctype html\u003e\n\u003chtml lang\u003d\"en\"\u003e\n\u003cbody\u003e\n  \u003cdiv\u003e\n    \u003ch1\u003eOpensourced today: \u003csmall\u003e$date\u003c/small\u003e\u003c/h1\u003e\n    \u003cp\u003eThe newest projects on github from the industry leaders\u003c/p\u003e\n    \u003ctable style\u003d\"width: 600px;\"\u003e\n      \u003cthead\u003e\n      \u003ctr\u003e\n        \u003cth\u003eCompany\u003c/th\u003e\n        \u003cth\u003eRepository\u003c/th\u003e\n        \u003cth\u003eLanguage\u003c/th\u003e\n        \u003cth\u003eDescription\u003c/th\u003e\n      \u003c/tr\u003e\n    \u003c/thead\u003e\n      \u003ctbody\u003e\n        $emailReport\n      \u003c/tbody\u003e\n    \u003c/table\u003e\n  \u003c/div\u003e\n\u003c/body\u003e\n\u003c/html\u003e\"\"\"",
+      "dateUpdated": "Sep 23, 2015 8:47:32 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true,
+        "tableHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442922434277_-1921207242",
+      "id": "20150922-204714_1628662472",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "emailTemplate: String \u003d \n\"\n\u003c!doctype html\u003e\n\u003chtml lang\u003d\"en\"\u003e\n\u003cbody\u003e\n  \u003cdiv\u003e\n    \u003ch1\u003eOpensourced today: \u003csmall\u003e2015-03-26\u003c/small\u003e\u003c/h1\u003e\n    \u003cp\u003eThe newest projects on github from the industry leaders\u003c/p\u003e\n    \u003ctable style\u003d\"width: 600px;\"\u003e\n      \u003cthead\u003e\n      \u003ctr\u003e\n        \u003cth\u003eCompany\u003c/th\u003e\n        \u003cth\u003eRepository\u003c/th\u003e\n        \u003cth\u003eLanguage\u003c/th\u003e\n        \u003cth\u003eDescription\u003c/th\u003e\n      \u003c/tr\u003e\n    \u003c/thead\u003e\n      \u003ctbody\u003e\n        \u003ctr\u003e\u003ctd\u003e\u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/2131181?\u0027\u003e\u003c/img\u003e\u003c/td\u003e\u003ctd\u003e\u003ca href\u003d\u0027https://github.com/BitFountain/InstaCam\u0027\u003eBitFountain/InstaCam\u003c/a\u003e\u003c/td\u003e\u003ctd\u003eJava\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\n\u003ctr\u003e\u003ctd\u003e\u003cimg style\u003d\u0027max-height:30px;\u0027 src\u003d\u0027https://avatars.githubusercontent.com/u/2738430?\u0027\u003e\u003c/img\u003e\u003c/td\u003e\u003ctd\u003e\u003ca href\u003d\u0027https://github.com/Genius/flip-the-script\u0027\u003eGenius/f..."
+      },
+      "dateCreated": "Sep 22, 2015 8:47:14 PM",
+      "dateStarted": "Sep 23, 2015 8:47:32 PM",
+      "dateFinished": "Sep 23, 2015 8:47:36 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "import courier._, Defaults._\nimport scala.concurrent._\nimport scala.concurrent.duration._\n\n//requires https://www.google.com/settings/security/lesssecureapps\nval mailer \u003d Mailer(\"smtp.gmail.com\", 587)\n               .auth(true)\n               .as(\"<your-email@gmail.com>\", \"<your-password>\")\n               .startTtls(true)()\n\nval sentEmail \u003d mailer(Envelope.from(\"<your-email\" `@` \"gmail.com\")\n        .to(\"abezzubov\" `@` \"nflabs.com\")\n        .cc(\"balassi.marton\"`@`\"gmail.com\" )\n        .subject(s\"Opensource today: new open repos on Github $date\")\n        .content(Multipart().html(style)))\n\nsentEmail.onSuccess {\n    case _ \u003d\u003e println(\"A message has been sent!\")\n}\nsentEmail.onFailure {\n    case t \u003d\u003e println(\"An error has occured: \" + t.getMessage)\n}\n\nAwait.ready(sentEmail, 15 seconds)",
+      "dateUpdated": "Sep 23, 2015 8:48:15 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorMode": "ace/mode/scala",
+        "tableHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442997770179_-1145509500",
+      "id": "20150923-174250_139702600",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "import courier._\nimport Defaults._\nimport scala.concurrent._\nimport scala.concurrent.duration._\nmailer: courier.Mailer \u003d Mailer(javax.mail.Session@23323196)\nwarning: there were 3 feature warning(s); re-run with -feature for details\nsentEmail: scala.concurrent.Future[Unit] \u003d scala.concurrent.impl.Promise$DefaultPromise@702a5810\nwarning: there were 1 feature warning(s); re-run with -feature for details\nA message has been sent!\nres237: sentEmail.type \u003d scala.concurrent.impl.Promise$DefaultPromise@702a5810\n"
+      },
+      "dateCreated": "Sep 23, 2015 5:42:50 PM",
+      "dateStarted": "Sep 23, 2015 8:48:08 PM",
+      "dateFinished": "Sep 23, 2015 8:48:39 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "9. Clean up",
+      "text": "%sh\n#rm -rf \n",
+      "dateUpdated": "Sep 25, 2015 5:02:19 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorMode": "ace/mode/sh",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442924509369_-2108533690",
+      "id": "20150922-212149_1792103679",
+      "dateCreated": "Sep 22, 2015 9:21:49 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "10. Use flink instead of spark - filter+call API+join",
+      "text": "%flink\nval dataFiles \u003d \"/Users/<username>/apacheCon2015-workshop/*.json.gz\"\nval in \u003d env.readTextFile(dataFiles) flatMap {\n  //parse JSON\n}\n// .map {\n//  _ \u003d\u003e (type, org.login, org.avatar_url, repo.id, repo.name)\n//}\n\n\n//4. Filter the data\n// .filter { case(type, login, avatar_url, repo_id, repo_name) \u003d\u003e\n//   type \u003d\u003d \u0027PublicEvent\u0027 \u0026\u0026 !login.isEmpty \u0026\u0026 login Set(\"facebook\", \"google\", \"twitter\").contains(login.toLower)\n//}\n\n\n//5. Github API call, same\n//repos.map {\n//  _ \u003d\u003e \"id\", \"html_url\", \"created_at\", \"description\", \"language\"    \n//}\n\n\n//6. Join \u0027in\u0027 and \u0027repos\u0027 \n// in    .map { _ \u003d\u003e (repo.id, (...)) }\n// repos .map { _ \u003d\u003e (id, (...)) }\n// in.join(repo).where(0).equals(1)\n\n\n//7. Generate Report Preview\n// same",
+      "dateUpdated": "Sep 25, 2015 6:31:26 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true,
+        "tableHide": true,
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442938622271_-951249064",
+      "id": "20150923-011702_841055273",
+      "result": {
+        "code": "ERROR",
+        "type": "TEXT",
+        "msg": "dataFiles: String \u003d /Users/<username>/apacheCon2015-workshop/*.json.gz\n\u003cconsole\u003e:19: error: overloaded method value flatMap with alternatives:\n  [R](fun: String \u003d\u003e TraversableOnce[R])(implicit evidence$16: org.apache.flink.api.common.typeinfo.TypeInformation[R], implicit evidence$17: scala.reflect.ClassTag[R])org.apache.flink.api.scala.DataSet[R] \u003cand\u003e\n  [R](fun: (String, org.apache.flink.util.Collector[R]) \u003d\u003e Unit)(implicit evidence$14: org.apache.flink.api.common.typeinfo.TypeInformation[R], implicit evidence$15: scala.reflect.ClassTag[R])org.apache.flink.api.scala.DataSet[R] \u003cand\u003e\n  [R](flatMapper: org.apache.flink.api.common.functions.FlatMapFunction[String,R])(implicit evidence$12: org.apache.flink.api.common.typeinfo.TypeInformation[R], implicit evidence$13: scala.reflect.ClassTag[R])org.apache.flink.api.scala.DataSet[R]\n cannot be applied to (Unit)\n            val in \u003d env.readTextFile(dataFiles) flatMap {\n                                                 ^\n"
+      },
+      "dateCreated": "Sep 23, 2015 1:17:02 AM",
+      "dateStarted": "Sep 25, 2015 6:31:26 PM",
+      "dateFinished": "Sep 25, 2015 6:31:26 PM",
+      "status": "ERROR",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "dateUpdated": "Sep 25, 2015 5:23:46 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorHide": false,
+        "tableHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1442920766933_779002698",
+      "id": "20150922-201926_1841062938",
+      "dateCreated": "Sep 22, 2015 8:19:26 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "ApacheCon 2015 EU - BigTop workshop",
+  "id": "2AZZ2MHVG",
+  "angularObjects": {
+    "2AZ2Y213Z": [],
+    "2AX2AMHYJ": [],
+    "2AX35WVDR": [],
+    "2AXZWQ6VM": [],
+    "2AZZ7PK9Z": [],
+    "2AXMR6AFE": [],
+    "2AWFQGXR8": [],
+    "2B158A5KP": [],
+    "2AWF6K6UB": [],
+    "2AYTM9X9W": [],
+    "2AZDRGMPR": [],
+    "2AXJHM4Y1": [],
+    "2AWPHBDCS": []
+  },
+  "config": {
+    "looknfeel": "default",
+    "cron": ""
+  },
+  "info": {}
+}
