@@ -1,3 +1,3 @@
-# Digest of new repositoried using GithubArchice
+# Data product using Apache Zeppelin and GithubArchive
 
-Building a data product using Apache Zeppelin: a newsletter digest of new repositories on github using [githubarchive.org](githubarchive.org).
+Follow an org on Github: a newsletter digest of new repositories on Github using [githubarchive.org](githubarchive.org).
